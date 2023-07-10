@@ -1,0 +1,170 @@
+-- What are the monthly and quarterly sales trends for Macbooks sold in North America across all years?
+-- Example answer: Across 2019-2022, Elist sold an average of 89 Macbooks to North American customers each quarter, with average quarterly sales of $143.5K. The average order price of these Macbooks was $1600.
+
+select date_trunc(orders.purchase_ts, quarter) as purchase_quarter, 
+  geo_lookup.region,
+  count(distinct orders.id) as order_count, 
+  round(sum(orders.usd_price),2) as total_sales,
+  round(avg(orders.usd_price),2) as aov
+from `elist-391320.elist.orders` as orders
+  left join `elist-391320.elist.customers` as customers
+    on orders.customer_id = customer_id
+  left join `elist-391320.elist.geo_lookup` as geo_lookup
+    on customers.country_code = geo_lookup.country
+  where lower(orders.product_name) like '%macbook%'
+  and country = 'NA'
+  group by 1,2
+  order by 1 desc,2;
+
+
+-- What was the monthly refund rate for purchases made in 2020? How many refunds did we have each month in 2021 for Apple products? 
+-- refund rate is equal to the total number of refunds divided by the total number of orders 
+
+select date_trunc(orders.purchase_ts, month) as month,
+    sum(case when refund_ts is not null then 1 else 0 end) as refunds,
+    sum(case when refund_ts is not null then 1 else 0 end)/count(distinct orders.id)*100 as refund_rate_percent
+from `elist-391320.elist.orders` orders
+left join `elist-391320.elist.order_status` order_status
+    on orders.id = order_status.order_id
+group by 1
+order by 1;
+
+-- A: Example answer: Monthly refund rates of orders placed in 2020 ranged from 2-3%. In 2021, Apple products had 7 to 30 refunds per month, with the highest refunded-month being March 2021.
+-- Number of refunds in 2021
+
+select date_trunc(order_status.refund_ts, month) as month,
+    sum(case when order_status.refund_ts is not null then 1 else 0 end) as refunds
+from `elist-391320.elist.orders` orders
+left join `elist-391320.elist.order_status` order_status
+    on orders.id = order_status.order_id
+where extract(year from order_status.refund_ts) = 2021
+and lower(product_name) like '%apple%'
+group by 1
+order by 1;
+
+
+--clean up product name
+--calculate refund rate across products
+--order in descending order of refund rate to get the top 3 frequently refunded
+select case when product_name = '27in"" 4k gaming monitor' then '27in 4K gaming monitor' else product_name end as product_clean,
+    sum(case when refund_ts is not null then 1 else 0 end) as refunds,
+    sum(case when refund_ts is not null then 1 else 0 end)/count(distinct orders.id)*100 as refund_rate_percent
+from `elist-391320.elist.orders` orders
+left join `elist-391320.elist.order_status` order_status
+    on orders.id = order_status.order_id
+group by 1
+order by 3 desc;
+
+
+--order in descending order of refund count to get the top 3 highest refund count
+select case when product_name = '27in"" 4k gaming monitor' then '27in 4K gaming monitor' else product_name end as product_clean,
+    sum(case when refund_ts is not null then 1 else 0 end) as refunds,
+    sum(case when refund_ts is not null then 1 else 0 end)/count(distinct orders.id)*100 as refund_rate_percent
+from `elist-391320.elist.orders` orders
+left join `elist-391320.elist.order_status` order_status
+    on orders.id = order_status.order_id
+group by 1
+order by 2 desc;
+
+-- A: The Macbook Air Laptop gets refunded the most at 4.2%, while the ThinkPad Laptop and Apple iPhone are the second and third most refunded items (3.8% and 3.5%). However, this does not mean they have the highest number of refunds - the Apple Airpod Headphones have the highest count of refunds, at 657 refunds across all years. The gaming monitor and Macbook Air have 395 and 118 refunds, respectively. 
+
+
+ --aov and count of new customers by account creation channel in first 2 months of 2022
+SELECT customers.account_creation_method,
+  AVG(usd_price) AS aov,
+  COUNT(DISTINCT customers.id) AS num_customers
+FROM `elist-391320.elist.orders` orders
+LEFT JOIN `elist-391320.elist.customers` customers
+	ON orders.customer_id = customers.id
+WHERE created_on BETWEEN '2022-01-01' AND '2022-02-28'
+  AND customers.account_creation_method IS NOT NULL
+GROUP BY 1
+ORDER BY 3 DESC;
+
+-- A: Example answer: Desktop had by far the most amount of new customers created in the first two months of 2022, with 2.5K new customers compared to 701 new customers on mobile. Desktop-created accounts also make more expensive purchases, with an AOV of $236. This AOV is slightly lower than that of customers who created their account on tablets (AOV of $287), though there have only been 25 purchases made on tablets so far. 
+
+
+--calculate days to purchase by taking date difference
+--take the average of the number of days to purchase
+-- *check if this code is correct
+with days_to_purchase_cte as (
+    select customers.id as customer_id, 
+	    orders.id as order_id,
+	    customers.created_on,
+	    orders.purchase_ts, 
+	    date_diff(orders.purchase_ts, customers.created_on,day) as days_to_purchase
+		from `elist-391320.elist.customers` customers
+		left join `elist-391320.elist.orders` orders
+		    on customers.id = orders.customer_id
+		order by 1,2,3)
+
+select avg(days_to_purchase) 
+from days_to_purchase_cte;
+
+
+--calculate the total number of orders and total sales by region and registration channel
+--rank the channels by total sales, and order the dataset by this ranking to surface the top channels per region first
+WITH region_orders AS (
+    SELECT geo_lookup.region, 
+    customers.marketing_channel,
+    COUNT(DISTINCT orders.id) AS num_orders, 
+    round(SUM(orders.usd_price),2) AS total_sales,
+    round(AVG(orders.usd_price),2) AS aov
+FROM `elist-391320.elist.orders` orders
+LEFT JOIN `elist-391320.elist.customers` customers
+    ON orders.customer_id = customers.id
+LEFT JOIN elist.geo_lookup
+    ON customers.country_code = geo_lookup.country
+WHERE geo_lookup.region IS NOT NULL AND customers.marketing_channel IS NOT NULL
+GROUP BY 1, 2
+ORDER BY 1, 2
+)
+
+SELECT *, 
+    ROW_NUMBER() OVER (PARTITION BY region ORDER BY num_orders DESC) AS ranking
+FROM region_orders
+ORDER BY 6 ASC;
+
+-- Insight: "Best" is indicated by revenue (totals per unit). Direct indicates customers coming directly to the site, which could be because of effective SEO driving people directly to the website. 
+
+--get customers with over 4 purchases first
+WITH over_4_purchases AS (
+  SELECT customer_id
+  FROM `elist-391320.elist.orders`
+  GROUP BY customer_id
+  HAVING COUNT(id) >= 4
+)
+SELECT orders.customer_id, 
+       orders.id, 
+       orders.product_name, 
+       orders.purchase_ts,
+       ROW_NUMBER() OVER (PARTITION BY orders.customer_id ORDER BY orders.purchase_ts DESC) AS order_ranking
+FROM `elist-391320.elist.orders` AS orders
+INNER JOIN over_4_purchases ON over_4_purchases.customer_id = orders.customer_id
+WHERE orders.customer_id IN (SELECT customer_id FROM over_4_purchases)
+QUALIFY order_ranking = 1;
+
+
+--create brand categories and filter to 2020
+--count the number of refunds per month
+with brand_refunds as (
+	select 
+	  case 
+      when lower(product_name) like '%apple%' or lower(product_name) like '%macbook%' then 'Apple'
+	    when lower(product_name) like '%thinkpad%' then 'ThinkPad'
+	    when lower(product_name) like '%samsung%' then 'Samsung'
+	    when lower(product_name) like '%bose%' then 'Bose'
+	    else 'Unknown'
+	  end as brand,
+	  date_trunc(refund_ts, month) as refund_month,
+	  count(refund_ts) as refunds
+	from `elist-391320.elist.orders` orders
+	left join `elist-391320.elist.orders_status` order_status
+		on orders.id = order_status.order_id
+	where extract(year from refund_ts) = 2020
+	group by 1,2)
+
+--select the month per brand based on the highest number of refunds
+select * 
+from brand_refunds
+qualify row_number() over (partition by brand order by refunds desc) = 1
