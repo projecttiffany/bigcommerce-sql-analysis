@@ -1,5 +1,5 @@
 -- What are the monthly and quarterly sales trends for Macbooks sold in North America across all years?
--- Example answer: Across 2019-2022, Elist sold an average of 89 Macbooks to North American customers each quarter, with average quarterly sales of $143.5K. The average order price of these Macbooks was $1600.
+-- Across 2019-2022, Elist sold an average of 89 Macbooks to North American customers each quarter, with average quarterly sales of $143.5K. The average order price of these Macbooks was $1600.
 
 select date_trunc(orders.purchase_ts, quarter) as purchase_quarter, 
   geo_lookup.region,
@@ -29,7 +29,7 @@ left join `elist-391320.elist.order_status` order_status
 group by 1
 order by 1;
 
--- A: Example answer: Monthly refund rates of orders placed in 2020 ranged from 2-3%. In 2021, Apple products had 7 to 30 refunds per month, with the highest refunded-month being March 2021.
+-- Monthly refund rates of orders placed in 2020 ranged from 2-3%. In 2021, Apple products had 7 to 30 refunds per month, with the highest refunded-month being March 2021.
 -- Number of refunds in 2021
 
 select date_trunc(order_status.refund_ts, month) as month,
@@ -43,7 +43,6 @@ group by 1
 order by 1;
 
 
---clean up product name
 --calculate refund rate across products
 --order in descending order of refund rate to get the top 3 frequently refunded
 select case when product_name = '27in"" 4k gaming monitor' then '27in 4K gaming monitor' else product_name end as product_clean,
@@ -66,7 +65,7 @@ left join `elist-391320.elist.order_status` order_status
 group by 1
 order by 2 desc;
 
--- A: The Macbook Air Laptop gets refunded the most at 4.2%, while the ThinkPad Laptop and Apple iPhone are the second and third most refunded items (3.8% and 3.5%). However, this does not mean they have the highest number of refunds - the Apple Airpod Headphones have the highest count of refunds, at 657 refunds across all years. The gaming monitor and Macbook Air have 395 and 118 refunds, respectively. 
+-- The Macbook Air Laptop gets refunded the most at 4.2%, while the ThinkPad Laptop and Apple iPhone are the second and third most refunded items (3.8% and 3.5%). However, this does not mean they have the highest number of refunds - the Apple Airpod Headphones have the highest count of refunds, at 657 refunds across all years. The gaming monitor and Macbook Air have 395 and 118 refunds, respectively. 
 
 
  --aov and count of new customers by account creation channel in first 2 months of 2022
@@ -81,7 +80,7 @@ WHERE created_on BETWEEN '2022-01-01' AND '2022-02-28'
 GROUP BY 1
 ORDER BY 3 DESC;
 
--- A: Example answer: Desktop had by far the most amount of new customers created in the first two months of 2022, with 2.5K new customers compared to 701 new customers on mobile. Desktop-created accounts also make more expensive purchases, with an AOV of $236. This AOV is slightly lower than that of customers who created their account on tablets (AOV of $287), though there have only been 25 purchases made on tablets so far. 
+-- Desktop had by far the most amount of new customers created in the first two months of 2022, with 2.5K new customers compared to 701 new customers on mobile. Desktop-created accounts also make more expensive purchases, with an AOV of $236. This AOV is slightly lower than that of customers who created their account on tablets (AOV of $287), though there have only been 25 purchases made on tablets so far. 
 
 
 --calculate days to purchase by taking date difference
@@ -125,7 +124,7 @@ SELECT *,
 FROM region_orders
 ORDER BY 6 ASC;
 
--- Insight: "Best" is indicated by revenue (totals per unit). Direct indicates customers coming directly to the site, which could be because of effective SEO driving people directly to the website. 
+-- "Best" is indicated by revenue (totals per unit). Direct indicates customers coming directly to the site, which could be because of effective SEO driving people directly to the website. 
 
 --get customers with over 4 purchases first
 WITH over_4_purchases AS (
