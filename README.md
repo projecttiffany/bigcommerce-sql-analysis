@@ -22,7 +22,6 @@ Utilized LEFT JOIN, GROUP BY, ORDER BY, HAVING, QUALIFY to assess sales performa
 - AOV and count of new customers by account creation channel in first 2 months of 2022
   ![image](https://github.com/projecttiffany/bigcommerce-sql-analysis/assets/51961132/5f016be2-3593-4eb6-8208-276f5a0b822a)
 
-## Tableau 
 
 
 ## Key Insights & Recommendations
