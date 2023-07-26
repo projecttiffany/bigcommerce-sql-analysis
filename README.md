@@ -29,7 +29,7 @@ Utilized LEFT JOIN, GROUP BY, ORDER BY, HAVING, QUALIFY to assess sales performa
   - Desktop monitors, Bluetooth headphones and Macbooks generated 85% of revenue and 70% of all orders in order to recover sales.
   - **Recommenedation:** In the same way Apple products are favored because of their "just-in-time" inventory system,  evaluate ways to reduce the amount of time and money spent on storing and shipping parts for your non-Apple products (we get some insight by analyzing refund rates, but could dive deeper with more relevant data).  For example, Bose Soundsport Headphones contribute less than 1% of total sales. Determine if the cost is worth this stream of revenue, otherwise consider removing it from the company's product line.
 - Marketing:
-  - The top account creation method is via desktop (2.5K new customers). The company's previous marketing investments in their direct and email marketing channels were effective. 
+  - The top account creation method is via desktop (2.5K new customers). The company's previous marketing investments in their direct and email marketing channels were effective since they top 2 marketing channels. 
   - **Recommendation:** Focus ad spending to social media sites that are often viewed more on desktop, such as LinkedIn, Facebook, Pinterest, and YouTube; use this approach to bolster the company's existing marketing strategies.
 - Loyalty Program:
   - The sharp decline in sales in 2022(46%), which coincides with the re-opening during the pandemic, was mitigated by the loyalty program. Loyalty program customers make more purchases and contribute to higher sales. Loyalty members are twice as responsive to email campaigns than non-loyalty members for the company's 4 largest markets.
