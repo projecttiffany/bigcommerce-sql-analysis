@@ -33,4 +33,4 @@ Utilized LEFT JOIN, GROUP BY, ORDER BY, HAVING, QUALIFY to assess sales performa
   - **Recommendation:** Focus ad spending to social media sites that are often viewed more on desktop, such as LinkedIn, Facebook, Pinterest, and YouTube; use this approach to bolster the company's existing marketing strategies.
 - Loyalty Program:
   - The sharp decline in sales in 2022(46%), which coincides with the re-opening during the pandemic, was mitigated by the loyalty program. Loyalty program customers make more purchases and contribute to higher sales. Loyalty members are also twice as responsive to email campaigns than non-loyalty members for the company's 4 largest products.
-  - **Recommendation:** Implementing a retention strategy, particularly through email marketing campaigns, utilizing loyalty members-only incentives will pay off over time. 
+  - **Recommendation:** Implementing a retention strategy, particularly through email marketing campaigns, utilizing loyalty members-only incentives can pay off over time. 
